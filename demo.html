@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Search App</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 60%;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        #imageResults {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .imageResult {
+            margin: 5px;
+        }
+
+        .imageResult img {
+            width: 200px;
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Image Search App</h1>
+        <input type="text" id="searchInput" placeholder="Search for images...">
+        <button id="searchBtn">Search</button>
+        <div id="imageResults"></div>
+    </div>
+    <script>
+
+            const apikey = "9ff3SQenMI-9RiQuifiJu54hnBO8Jitr1F7h5vwpDgE";
+              document.getElementById('searchBtn').addEventListener('click', function () {
+            var query = document.getElementById('searchInput').value;
+            if (query.trim() !== '') {
+                searchImages(query);
+            }
+        });
+
+
+        function searchImages(query) {
+            // var url = 'https://api.unsplash.com/search/photos?query=' + query + '&client_id=YOUR_UNSPLASH_ACCESS_KEY';
+            const url = `https://api.unsplash.com/search/photos?query=${query}&client_id=${apikey}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    displayImages(data.results);
+                })
+                .catch(error => console.log('Error fetching images:', error));
+        }
+
+        function displayImages(images) {
+            var imageResultsDiv = document.getElementById('imageResults');
+            imageResultsDiv.innerHTML = '';
+            images.forEach(image => {
+                var imgElement = document.createElement('img');
+                imgElement.src = image.urls.small;
+                imgElement.alt = image.alt_description;
+                imgElement.classList.add('imageResult');
+                imageResultsDiv.appendChild(imgElement);
+            });
+        }
+
+    </script>
+</body>
+
+</html>
