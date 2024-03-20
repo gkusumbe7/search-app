@@ -8,74 +8,89 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        
+
     </style>
 </head>
 
-<body >
+<body>
 
-    <div class="ml-10 mr-10">
-        <div class="flex flex-col  items-center mt-10 mb-10 ">
+    <div class="ml-10 mr-10 flex flex-col items-center">
+        <div class="flex flex-col  items-center mt-5 mb-5 ">
             <p class="text-3xl font-semibold mb-10 font-serif ">Image Search App </p>
             <div>
                 <!-- <form action="#"> -->
-                    <input id="userInputValue"
-                        class=" border w-96  p-2 rounded-md shadow-sm text-base border border-black font-semibold "
-                        type="text" placeholder="Search for images...">
-                    <button id="searchBtn"
-                        class=" border w-24 p-2 shadow-md rounded-md text-base border border-black font-semibold bg-blue-50 hover:bg-green-200 ">Search</button>
-                <!-- </form> -->
+                <input id="userInputValue"
+                    class=" border w-96  p-2 rounded-md shadow-sm text-base border border-black font-semibold "
+                    type="text" placeholder="Search for images...">
+                <button id="searchBtn"
+                    class=" border w-24 p-2 shadow-md rounded-md text-base border border-black font-semibold bg-blue-50 hover:bg-green-200 ">Search</button>
+                 <button id="showMoreBtn" class="border  p-2 shadow-md rounded-md text-base border border-black font-semibold bg-blue-50 hover:bg-green-200">Show More</button>
+                    <!-- </form> -->
             </div>
         </div>
-            <div class="displayImages flex flex-wrap gap-y-6  justify-evenly">
-             </div>
+        <div class="displayImages flex flex-wrap gap-y-6 gap-x-6 justify-evenly">
         </div>
-
-
-        <button id="show-more-btn" class="border border-black hidden">Show More</button>
+       
+    </div>
+    <!-- <button id="show-more-btn" class="border border-black ">Show More</button> -->
     </div>
 
     <script>
 
-       const acceApiKey = "9ff3SQenMI-9RiQuifiJu54hnBO8Jitr1F7h5vwpDgE";
- 
-       let userInputValue = document.getElementById("userInputValue");
- 
-       let searchButton = document.getElementById("searchBtn");
- 
-       searchButton.addEventListener("click", function(){
-            let query = userInputValue.value;
-            if(query.trim() !== ""){
-                serachImg(query);
+        const acceApiKey = "9ff3SQenMI-9RiQuifiJu54hnBO8Jitr1F7h5vwpDgE";
+
+        let userInputValue = document.getElementById("userInputValue");
+
+        let searchButton = document.getElementById("searchBtn");
+
+        let showMoreBtn = document.getElementById("showMoreBtn");
+        console.log(showMoreBtn);
+
+        let currentPage =  1;
+        let query = "";
+
+        searchButton.addEventListener("click", function () {
+             query = userInputValue.value;
+            if (query.trim() !== "") {
+                currentPage = 1;
+                serachImg(query , currentPage);
             }
         });
 
-        function serachImg(query){
-
-            const url = `https://api.unsplash.com/search/photos?query=${query}&client_id=${acceApiKey}`;
+        document.getElementById("showMoreBtn").addEventListener("click",function(){
+            currentPage++;
+            serachImg(query,currentPage);
+        });
+        
+        function serachImg(query , page) {
+            let perPage = 4;
+            // const url = `https://api.unsplash.com/search/photos?query=${query}&client_id=${acceApiKey}`;
+            const url = `https://api.unsplash.com/search/photos?query=${query}&page=${page}&per_page=${perPage}&client_id=${acceApiKey}`;
             
             fetch(url)
-            .then(reponse => reponse.json())
-            .then(data=>{
-                displayImages(data.results);
-            })
-            .catch(error => console.log("Error fetching images:",error));
+                .then(reponse => reponse.json())
+                .then(data => {
+                    displayImages(data.results);
+                    if(data.results.length === 0){
+                        alert('No more images available.');
+                        currentPage--;
+                    }
+                })
+                .catch(error => console.log("Error fetching images:", error));
         }
 
-        function displayImages(imagesData){
+        function displayImages(imagesData) {
             let imageCards = document.querySelector(".displayImages");
-            imageCards.innerHTML ='';
+            imageCards.innerHTML = '';
             imagesData.forEach(data => {
                 let div = document.createElement("div");
-                div.innerHTML = `<div  class="card border p-3 h-fit w-80 bg-blue-200 shadow-md hover:bg-red-300">
-                                 <img class="bg-cover h-80 w-80 " src="${data.urls.small}" alt="${data.alt_description}"> 
+                div.innerHTML = `<div  class="card border p-3 h-full w-60 bg-blue-200 shadow-md hover:bg-red-300">
+                                 <img class="bg-cover h-60  w-60 " src="${data.urls.small}" alt="${data.alt_description}"> 
                                  <p class="font-medium text-center">${data.alt_description}</p>
                                  </div>`;
                 imageCards.append(div);
             });
-            
         }
-
 
     </script>
 </body>
